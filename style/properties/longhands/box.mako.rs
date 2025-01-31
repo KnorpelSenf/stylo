@@ -19,11 +19,11 @@ ${helpers.predefined_type(
 
 ${helpers.single_keyword(
     "-moz-top-layer",
-    "none top",
+    "none auto",
     engines="gecko",
     gecko_enum_prefix="StyleTopLayer",
     gecko_ffi_name="mTopLayer",
-    animation_type="none",
+    animation_type="discrete",
     enabled_in="ua",
     spec="Internal (not web-exposed)",
     affects="layout",
@@ -92,11 +92,9 @@ ${helpers.predefined_type(
     "Float",
     "computed::Float::None",
     engines="gecko servo",
-    initial_specified_value="specified::Float::None",
-    spec="https://drafts.csswg.org/css-box/#propdef-float",
     animation_type="discrete",
+    spec="https://drafts.csswg.org/css-box/#propdef-float",
     servo_restyle_damage="rebuild_and_reflow",
-    gecko_ffi_name="mFloat",
     affects="layout",
 )}
 

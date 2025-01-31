@@ -607,6 +607,8 @@ impl ToCss for CustomIdent {
     ToComputedValue,
     ToResolvedValue,
     ToShmem,
+    Serialize,
+    Deserialize,
 )]
 pub struct DashedIdent(pub Atom);
 

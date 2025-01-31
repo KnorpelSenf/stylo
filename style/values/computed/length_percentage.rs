@@ -67,7 +67,9 @@ pub struct PercentageVariant {
 #[cfg(target_pointer_width = "32")]
 pub struct CalcVariant {
     tag: u8,
-    ptr: *mut CalcLengthPercentage,
+    // Ideally CalcLengthPercentage, but that would cause circular references
+    // for leaves referencing LengthPercentage.
+    ptr: *mut (),
 }
 
 #[doc(hidden)]
@@ -200,9 +202,12 @@ impl ToResolvedValue for LengthPercentage {
 
 /// An unpacked `<length-percentage>` that borrows the `calc()` variant.
 #[derive(Clone, Debug, PartialEq, ToCss)]
-enum Unpacked<'a> {
+pub enum Unpacked<'a> {
+    /// A `calc()` value
     Calc(&'a CalcLengthPercentage),
+    /// A length value
     Length(Length),
+    /// A percentage value
     Percentage(Percentage),
 }
 
@@ -358,7 +363,7 @@ impl LengthPercentage {
         #[cfg(target_pointer_width = "32")]
         let calc = CalcVariant {
             tag: LengthPercentageUnion::TAG_CALC,
-            ptr,
+            ptr: ptr as *mut (),
         };
 
         #[cfg(target_pointer_width = "64")]
@@ -395,8 +400,10 @@ impl LengthPercentage {
         }
     }
 
+    /// Unpack the tagged pointer representation of a length-percentage into an enum
+    /// representation with separate tag and value.
     #[inline]
-    fn unpack<'a>(&'a self) -> Unpacked<'a> {
+    pub fn unpack<'a>(&'a self) -> Unpacked<'a> {
         unsafe {
             match self.tag() {
                 Tag::Calc => Unpacked::Calc(&*self.calc_ptr()),
@@ -906,6 +913,22 @@ impl CalcLengthPercentage {
                 } else {
                     leaf.clone()
                 })
+            }, |node| {
+                match node {
+                    CalcNode::Anchor(f) => {
+                        if let Some(fallback) = f.fallback.as_ref() {
+                            return Ok((**fallback).clone());
+                        }
+                        Ok(CalcNode::Leaf(CalcLengthPercentageLeaf::Length(Length::zero())))
+                    },
+                    CalcNode::AnchorSize(f) => {
+                        if let Some(fallback) = f.fallback.as_ref() {
+                            return Ok((**fallback).clone());
+                        }
+                        Ok(CalcNode::Leaf(CalcLengthPercentageLeaf::Length(Length::zero())))
+                    }
+                    _ => Err(()),
+                }
             })
             .unwrap()
         {

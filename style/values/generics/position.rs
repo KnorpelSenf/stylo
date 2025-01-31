@@ -342,6 +342,8 @@ pub use self::GenericInset as Inset;
     ToAnimatedZero,
     ToComputedValue,
     ToResolvedValue,
+    Serialize,
+    Deserialize,
 )]
 #[repr(C)]
 pub struct GenericAnchorFunction<Percentage, LengthPercentage> {
@@ -397,6 +399,8 @@ where
     ToAnimatedZero,
     ToComputedValue,
     ToResolvedValue,
+    Serialize,
+    Deserialize,
 )]
 #[repr(u8)]
 pub enum AnchorSideKeyword {
@@ -443,6 +447,8 @@ pub enum AnchorSideKeyword {
     ToAnimatedZero,
     ToComputedValue,
     ToResolvedValue,
+    Serialize,
+    Deserialize,
 )]
 #[repr(C)]
 pub enum AnchorSide<P> {
