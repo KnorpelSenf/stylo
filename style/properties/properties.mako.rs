@@ -884,6 +884,16 @@ impl LonghandIdSet {
         &HAS_NO_EFFECT_ON_SCROLLBARS
     }
 
+    /// Returns the set of margin properties, for the purposes of <h1> use counters / warnings.
+    #[inline]
+    pub fn margin_properties() -> &'static Self {
+        ${static_longhand_id_set(
+            "MARGIN_PROPERTIES",
+            lambda p: p.logical_group == "margin"
+        )}
+        &MARGIN_PROPERTIES
+    }
+
     /// Returns the set of border properties for the purpose of disabling native
     /// appearance.
     #[inline]
@@ -1874,9 +1884,9 @@ impl ComputedValues {
     ///
     /// Usage example:
     /// let top_color =
-    ///   style.resolve_color(style.get_border().clone_border_top_color());
+    ///   style.resolve_color(&style.get_border().clone_border_top_color());
     #[inline]
-    pub fn resolve_color(&self, color: computed::Color) -> crate::color::AbsoluteColor {
+    pub fn resolve_color(&self, color: &computed::Color) -> crate::color::AbsoluteColor {
         let current_color = self.get_inherited_text().clone_color();
         color.resolve_to_absolute(&current_color)
     }
