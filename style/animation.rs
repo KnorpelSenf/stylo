@@ -1073,6 +1073,14 @@ impl ElementAnimationSet {
             None => return,
         };
 
+        // A property may have an animation type different than 'discrete', but still
+        // not be able to interpolate some values. In that case we would fall back to
+        // discrete interpolation, so we need to abort if `transition-behavior` doesn't
+        // allow discrete transitions.
+        if !allow_discrete && !property_animation.from.interpolable_with(&property_animation.to) {
+            return;
+        }
+
         // Per [1], don't trigger a new transition if the end state for that
         // transition is the same as that of a transition that's running or
         // completed. We don't take into account any canceled animations.
